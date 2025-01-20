@@ -1,0 +1,6 @@
+*.db
+*.log
+*.png
+*.json
+*.session
+*.session-journal
