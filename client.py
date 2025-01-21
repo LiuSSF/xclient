@@ -1,8 +1,9 @@
 import socket
 from webdriver_setup import setup_webdriver, login
 import time
+import os
 from scan import star_scan
-
+os.environ["DISPLAY"] = ":0" 
 def handle_task(task):
     """
     处理任务（这里简单模拟任务处理）

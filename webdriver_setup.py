@@ -11,6 +11,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 import requests
 import configparser
+os.environ["DISPLAY"] = ":0" 
 def get_public_ip():
     try:
         # 使用 ipify 的 API 获取外网 IP
@@ -23,15 +24,6 @@ def get_public_ip():
             return "无法获取外网IP地址"
     except Exception as e:
         return f"发生错误: {e}"
-# 创建 ConfigParser 对象
-config = configparser.ConfigParser()
-# 读取配置文件
-config.read('config.ini')
-# 获取配置项
-configname = get_public_ip()
-user = config.get(configname, 'user')
-password = config.get(configname, 'pass')
-two_fa = config.get(configname, '2fa')
 
 def custom_screenshot(driver, file, width, height):
     os.makedirs("png", exist_ok=True)  # Ensure the 'png' directory exists
@@ -115,6 +107,16 @@ def get_verification_code(google2fa):
 
 
 def login(driver):
+    # 创建 ConfigParser 对象
+    config = configparser.ConfigParser()
+    # 读取配置文件
+    config.read('config.ini')
+    # 获取配置项
+    configname = get_public_ip()
+    xuser = config.get(configname, 'user')
+    xpassword = config.get(configname, 'pass')
+    two_fa = config.get(configname, '2fa')
+    print(xuser, xpassword, two_fa)
     driver.get("https://x.com/home?lang=zh") #   https://cn.tradingview.com/chart/R5c7qOGM/  https://cn.tradingview.com/chart/azMSont9/
     # 等待页面完全加载
     time.sleep(5)
@@ -133,27 +135,39 @@ def login(driver):
         print(element.text)
         if element.text == 'Sign in':
             element.click()
+            print('点击登录')
             time.sleep(5)
             custom_screenshot(driver, "Sign in.png", 1024, 768)
             username = driver.find_element(By.CSS_SELECTOR, '#layers > div:nth-child(2) > div > div > div > div > div > div.css-175oi2r.r-1ny4l3l.r-18u37iz.r-1pi2tsx.r-1777fci.r-1xcajam.r-ipm5af.r-g6jmlv.r-1awozwy > div.css-175oi2r.r-1wbh5a2.r-htvplk.r-1udh08x.r-1867qdf.r-kwpbio.r-rsyp9y.r-1pjcn9w.r-1279nm1 > div > div > div.css-175oi2r.r-1ny4l3l.r-6koalj.r-16y2uox.r-kemksi.r-1wbh5a2 > div.css-175oi2r.r-16y2uox.r-1wbh5a2.r-f8sm7e.r-13qz1uu.r-1ye8kvj > div > div > div > div.css-175oi2r.r-1mmae3n.r-1e084wi.r-13qz1uu > label > div > div.css-175oi2r.r-18u37iz.r-16y2uox.r-1wbh5a2.r-1wzrnnt.r-1udh08x.r-xd6kpl.r-is05cd.r-ttdzmv > div > input')
-            username.send_keys(user) #fuxiaoman800@gmail.com fuxiaoman1@gmail.com
+            username.send_keys(xuser) #fuxiaoman800@gmail.com fuxiaoman1@gmail.com
+            print('输入账号')
             custom_screenshot(driver, "login.png", 1024, 768)
             login_button = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div/div/div/button[2]/div/span/span')))
             login_button.click()
+            print('点击下一步')
             custom_screenshot(driver, "login1.png", 1024, 768)
-            # time.sleep(5)
-            # user = driver.find_element(By.CSS_SELECTOR, '#layers > div:nth-child(2) > div > div > div > div > div > div.css-175oi2r.r-1ny4l3l.r-18u37iz.r-1pi2tsx.r-1777fci.r-1xcajam.r-ipm5af.r-g6jmlv.r-1awozwy > div.css-175oi2r.r-1wbh5a2.r-htvplk.r-1udh08x.r-1867qdf.r-kwpbio.r-rsyp9y.r-1pjcn9w.r-1279nm1 > div > div > div.css-175oi2r.r-1ny4l3l.r-6koalj.r-16y2uox.r-kemksi.r-1wbh5a2 > div.css-175oi2r.r-16y2uox.r-1wbh5a2.r-f8sm7e.r-13qz1uu.r-1ye8kvj > div.css-175oi2r.r-16y2uox.r-1wbh5a2.r-1dqxon3 > div > div.css-175oi2r.r-1mmae3n.r-1e084wi > label > div > div.css-175oi2r.r-18u37iz.r-16y2uox.r-1wbh5a2.r-1wzrnnt.r-1udh08x.r-xd6kpl.r-is05cd.r-ttdzmv > div > input')
-            # user.send_keys("FrasheriAr53973") #fuxiaoman800@gmail.com fuxiaoman1@gmail.com
-            # custom_screenshot(driver, "login2.png", 1024, 768)
-            # login_button = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div[2]/div/div/div/button/div/span/span')))
-            # login_button.click()
-            # custom_screenshot(driver, "login3.png", 1024, 768)
+            try:
+                time.sleep(5)
+                user = driver.find_element(By.CSS_SELECTOR, '#layers > div:nth-child(2) > div > div > div > div > div > div.css-175oi2r.r-1ny4l3l.r-18u37iz.r-1pi2tsx.r-1777fci.r-1xcajam.r-ipm5af.r-g6jmlv.r-1awozwy > div.css-175oi2r.r-1wbh5a2.r-htvplk.r-1udh08x.r-1867qdf.r-kwpbio.r-rsyp9y.r-1pjcn9w.r-1279nm1 > div > div > div.css-175oi2r.r-1ny4l3l.r-6koalj.r-16y2uox.r-kemksi.r-1wbh5a2 > div.css-175oi2r.r-16y2uox.r-1wbh5a2.r-f8sm7e.r-13qz1uu.r-1ye8kvj > div.css-175oi2r.r-16y2uox.r-1wbh5a2.r-1dqxon3 > div > div.css-175oi2r.r-1mmae3n.r-1e084wi > label > div > div.css-175oi2r.r-18u37iz.r-16y2uox.r-1wbh5a2.r-1wzrnnt.r-1udh08x.r-xd6kpl.r-is05cd.r-ttdzmv > div > input')
+                user.send_keys(xuser+'@mifas.com.tr') #fuxiaoman800@gmail.com fuxiaoman1@gmail.com
+                print('输入用户')
+                custom_screenshot(driver, "login2.png", 1024, 768)
+                login_button = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div[2]/div/div/div/button/div/span/span')))
+                login_button.click()
+                print('点击下一步')
+                custom_screenshot(driver, "login3.png", 1024, 768)
+            except:
+                pass
             time.sleep(5)
-            password = driver.find_element(By.CSS_SELECTOR, '#layers > div:nth-child(2) > div > div > div > div > div > div.css-175oi2r.r-1ny4l3l.r-18u37iz.r-1pi2tsx.r-1777fci.r-1xcajam.r-ipm5af.r-g6jmlv.r-1awozwy > div.css-175oi2r.r-1wbh5a2.r-htvplk.r-1udh08x.r-1867qdf.r-kwpbio.r-rsyp9y.r-1pjcn9w.r-1279nm1 > div > div > div.css-175oi2r.r-1ny4l3l.r-6koalj.r-16y2uox.r-kemksi.r-1wbh5a2 > div.css-175oi2r.r-16y2uox.r-1wbh5a2.r-f8sm7e.r-13qz1uu.r-1ye8kvj > div.css-175oi2r.r-16y2uox.r-1wbh5a2.r-1dqxon3 > div > div > div.css-175oi2r.r-1e084wi.r-13qz1uu > div > label > div > div.css-175oi2r.r-18u37iz.r-16y2uox.r-1wbh5a2.r-1wzrnnt.r-1udh08x.r-xd6kpl.r-is05cd.r-ttdzmv > div.css-146c3p1.r-bcqeeo.r-1ttztb7.r-qvutc0.r-37j5jr.r-135wba7.r-16dba41.r-1awozwy.r-6koalj.r-1inkyih.r-13qz1uu > input')
-            password.send_keys(password) #fuxiaoman800@gmail.com fuxiaoman1@gmail.com
+            custom_screenshot(driver, "pass0.png", 1024, 768)
+            password = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#layers > div:nth-child(2) > div > div > div > div > div > div.css-175oi2r.r-1ny4l3l.r-18u37iz.r-1pi2tsx.r-1777fci.r-1xcajam.r-ipm5af.r-g6jmlv.r-1awozwy > div.css-175oi2r.r-1wbh5a2.r-htvplk.r-1udh08x.r-1867qdf.r-kwpbio.r-rsyp9y.r-1pjcn9w.r-1279nm1 > div > div > div.css-175oi2r.r-1ny4l3l.r-6koalj.r-16y2uox.r-kemksi.r-1wbh5a2 > div.css-175oi2r.r-16y2uox.r-1wbh5a2.r-f8sm7e.r-13qz1uu.r-1ye8kvj > div.css-175oi2r.r-16y2uox.r-1wbh5a2.r-1dqxon3 > div > div > div.css-175oi2r.r-1e084wi.r-13qz1uu > div > label > div > div.css-175oi2r.r-18u37iz.r-16y2uox.r-1wbh5a2.r-1wzrnnt.r-1udh08x.r-xd6kpl.r-is05cd.r-ttdzmv > div.css-146c3p1.r-bcqeeo.r-1ttztb7.r-qvutc0.r-37j5jr.r-135wba7.r-16dba41.r-1awozwy.r-6koalj.r-1inkyih.r-13qz1uu > input")))
+            password.send_keys(xpassword) #fuxiaoman800@gmail.com fuxiaoman1@gmail.com
+            print('输入密码')
+            custom_screenshot(driver, "pass01.png", 1024, 768)
             custom_screenshot(driver, "pass.png", 1024, 768)
             login_button = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div[2]/div/div[1]/div/div/button/div/span/span')))
             login_button.click()
+            print('点击下一步')
             custom_screenshot(driver, "pass1.png", 1024, 768)
             time.sleep(5)
             password2fa = driver.find_element(By.CSS_SELECTOR, '#layers > div:nth-child(2) > div > div > div > div > div > div.css-175oi2r.r-1ny4l3l.r-18u37iz.r-1pi2tsx.r-1777fci.r-1xcajam.r-ipm5af.r-g6jmlv.r-1awozwy > div.css-175oi2r.r-1wbh5a2.r-htvplk.r-1udh08x.r-1867qdf.r-kwpbio.r-rsyp9y.r-1pjcn9w.r-1279nm1 > div > div > div.css-175oi2r.r-1ny4l3l.r-6koalj.r-16y2uox.r-kemksi.r-1wbh5a2 > div.css-175oi2r.r-16y2uox.r-1wbh5a2.r-f8sm7e.r-13qz1uu.r-1ye8kvj > div.css-175oi2r.r-16y2uox.r-1wbh5a2.r-1dqxon3 > div > div.css-175oi2r.r-1mmae3n.r-1e084wi > label > div > div.css-175oi2r.r-18u37iz.r-16y2uox.r-1wbh5a2.r-1wzrnnt.r-1udh08x.r-xd6kpl.r-is05cd.r-ttdzmv > div > input')
@@ -173,4 +187,3 @@ def login(driver):
 # # 获取验证码
 # verification_code = get_verification_code('KHRAQE4TP6V7RSFO')
 # print("Verification Code:", verification_code)
-print(user, password, two_fa)
